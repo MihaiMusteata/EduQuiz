@@ -21,7 +21,6 @@ public static class QuestionMapper
     {
         return new QuestionDbTable
         {
-            Id = dto.Id,
             Text = dto.Text,
             Type = dto.Type,
             Points = dto.Points,

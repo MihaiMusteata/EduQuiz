@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using EduQuiz.Application.Services.Auth;
+using EduQuiz.Application.Services.Question;
 using EduQuiz.Application.Services.Quiz;
 using EduQuiz.Domain.Entities;
 using EduQuiz.Infrastructure;
@@ -37,7 +38,7 @@ builder.Services.AddIdentity<UserDbTable, IdentityRole>()
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
-
+builder.Services.AddScoped<IQuestionService, QuestionService>();
 
 var jwtConfig = builder.Configuration.GetSection("Jwt");
 
