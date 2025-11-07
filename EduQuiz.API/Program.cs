@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using EduQuiz.Application.Services.Auth;
 using EduQuiz.Application.Services.Question;
 using EduQuiz.Application.Services.Quiz;
+using EduQuiz.Application.Services.QuizSession;
 using EduQuiz.Domain.Entities;
 using EduQuiz.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,6 +40,7 @@ builder.Services.AddIdentity<UserDbTable, IdentityRole>()
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<IQuizSessionService, QuizSessionService>();
 
 var jwtConfig = builder.Configuration.GetSection("Jwt");
 

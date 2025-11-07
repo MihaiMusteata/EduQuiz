@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EduQuiz.Infrastructure.Configurations;
 
-public class QuizSessionParticipantDbTableConfiguration: IEntityTypeConfiguration<QuizSessionParticipantDbTable>
+public class QuizSessionParticipantDbTableConfiguration : IEntityTypeConfiguration<QuizSessionParticipantDbTable>
 {
     public void Configure(EntityTypeBuilder<QuizSessionParticipantDbTable> builder)
     {
