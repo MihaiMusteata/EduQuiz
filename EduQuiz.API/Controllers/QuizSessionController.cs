@@ -34,4 +34,13 @@ public class QuizSessionController(IQuizSessionService _quizSessionService) : Ba
         return response.Success ? Ok(response.Data) : BadRequest(response.Message);
     }
 
+    [HttpPost("{sessionId:guid}/update-status")]
+    [Authorize]
+    public async Task<IActionResult> UpdateSessionStatus([FromRoute] Guid sessionId)
+    {
+        var hostUserId = GetUserIdFromJwt();
+        var response = await _quizSessionService.UpdateSessionStatusAsync(sessionId, hostUserId);
+        return response.Success ? Ok(response.Message) : BadRequest(response.Message);
+    }
+
 }

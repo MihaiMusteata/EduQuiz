@@ -49,11 +49,41 @@ public class QuizSessionService(EduQuizDbContext _context) : IQuizSessionService
         {
             var sessionDetailsDto = session.ToDetailsDto();
             return ApiResponse<QuizSessionDto>.Ok(sessionDetailsDto);
-
         }
+
         var sessionDto = session.ToDto();
 
         return ApiResponse<QuizSessionDto>.Ok(sessionDto);
+    }
+
+    public async Task<ApiResponse> UpdateSessionStatusAsync(Guid sessionId, string? hostUserId = null)
+    {
+        var session = await _context.QuizSessions.FindAsync(sessionId);
+        if (session is null)
+            return ApiResponse.Fail("Quiz session not found");
+
+        if (hostUserId is not null && session.HostUserId != hostUserId)
+            return ApiResponse.Fail("Unauthorized to update this session");
+
+        if (session.Status == QuizSessionStatus.Completed)
+            return ApiResponse.Fail("Quiz session is already completed");
+
+        session.Status++;
+
+        if (session.Status == QuizSessionStatus.Completed)
+            session.EndTime = DateTime.UtcNow;
+
+        try
+        {
+            _context.QuizSessions.Update(session);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return ApiResponse.Fail("Failed to update quiz session due to database error");
+        }
+        
+        return ApiResponse.Ok("Quiz session updated successfully");
     }
 
     private string GeneratePin()
