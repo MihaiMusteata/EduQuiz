@@ -1,5 +1,8 @@
 using System.Security.Cryptography;
+using EduQuiz.API;
+using EduQuiz.API.Hubs;
 using EduQuiz.Application.Services.Auth;
+using EduQuiz.Application.Services.BackgroundProcessor;
 using EduQuiz.Application.Services.Question;
 using EduQuiz.Application.Services.Quiz;
 using EduQuiz.Application.Services.QuizSession;
@@ -10,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +45,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IQuizSessionService, QuizSessionService>();
+builder.Services.AddScoped<IQuizSessionBackgroundProcessor, QuizSessionBackgroundProcessor>();
+
+builder.Services.AddQuartz();
+builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+builder.Services.AddSignalR();
+
 
 var jwtConfig = builder.Configuration.GetSection("Jwt");
 
@@ -84,6 +94,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<QuizSessionHub>("/hubs/quiz-session");
 
 app.MapControllers();
 app.Run();

@@ -1,6 +1,5 @@
 using EduQuiz.Application.DTOs.QuizSession;
 using EduQuiz.Application.Wrapper;
-using EduQuiz.Domain.Enums;
 
 namespace EduQuiz.Application.Services.QuizSession;
 
