@@ -6,4 +6,15 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="DTOs\" />
+      <Folder Include="Services\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\SharedLibrary\SharedLibrary.csproj" />
+      <ProjectReference Include="..\Quiz.Domain\Quiz.Domain.csproj" />
+      <ProjectReference Include="..\Quiz.Infrastructure\Quiz.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
