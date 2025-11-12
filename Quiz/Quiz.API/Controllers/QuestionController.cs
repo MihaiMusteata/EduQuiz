@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Quiz.Application.DTOs.Question;
 using Quiz.Application.Services.Question;
+using SharedLibrary;
 
 namespace Quiz.API.Controllers;
 

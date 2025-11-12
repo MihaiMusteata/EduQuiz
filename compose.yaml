@@ -29,6 +29,17 @@ services:
     networks:
       - eduquiz_network
 
+  # --- QUIZ SESSION DATABASE ---
+  postgres-quiz-session:
+    image: postgres:16.4-alpine3.20
+    container_name: eduquiz-postgres-quiz-session
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: eduquiz_quiz_session_db
+    ports:
+      - "5435:5432"
+
 volumes:
   postgres_auth_data:
   postgres_quiz_data:
