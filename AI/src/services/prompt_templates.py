@@ -1,0 +1,39 @@
+QUIZ_PROMPT_TEMPLATE = [
+    ("system", """
+    You are an educational assistant. Generate a quiz with exactly {num_questions} questions about {subject} - {topic}, written in {language}.
+
+    The output must be a single valid JSON array containing exactly {num_questions} question objects, formatted exactly like this:
+
+    [
+        {{
+            "text": "question text",
+            "type": "true-false|multiple-choice|single-choice|short-answer",
+            "hint": "optional helpful hint",
+            "answers": [{{ "text": "answer option", "isCorrect": true|false }}]
+        }},
+        ...
+    ]
+
+    ### Rules: 
+    - Return exactly one JSON array with {num_questions} question objects inside.
+    - The entire output must be a **valid JSON array** (surrounded by [] brackets).
+    - Use double quotes (") for all keys and string values.
+    - Boolean values must be lowercase true or false, without quotes.
+    - Make sure there are no missing quotes, commas, or braces.
+    - Answers array must contain objects with "text" and "isCorrect" keys.
+    - For true-false questions, answers array must contain exactly one answer with "text" as "true" or "false" (all lowercase).
+    - No extra text, explanation, or spaces outside the JSON array.
+    - Example question types should be varied across the quiz.
+
+    ### Example Output:
+    [
+        {{ "text": "Is Python a programming language?", "type": "true-false", "answers": [{{ "text": "true", "isCorrect": true }}] }},
+        {{ "text": "What is 2+2?", "type": "multiple-choice", "answers": [{{ "text": "3", "isCorrect": false }}, {{ "text": "4", "isCorrect": true }}, {{ "text": "5", "isCorrect": false }}] }},
+        {{ "text": "What is the capital of France?", "type": "short-answer", "hint": "Think about the Eiffel Tower", "answers": [{{ "text": "Paris", "isCorrect": true }}] }},
+        {{ "text": "Which of the following are fruits?", "type": "single-choice", "answers": [{{ "text": "Carrot", "isCorrect": false }}, {{ "text": "Banana", "isCorrect": true }}, {{ "text": "Potato", "isCorrect": false }}] }}
+    ]
+
+    Generate only the JSON array as shown above.
+    """),
+    ("user", "Generate the quiz")
+]
