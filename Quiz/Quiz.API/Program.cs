@@ -11,7 +11,14 @@ using Quiz.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpClient("AIGeneratorMicroservice", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["AIGeneratorMicroservice:BaseUrl"]!);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

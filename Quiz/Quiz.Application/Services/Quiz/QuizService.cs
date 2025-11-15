@@ -6,7 +6,7 @@ using SharedLibrary.Wrapper;
 
 namespace Quiz.Application.Services.Quiz;
 
-public class QuizService(QuizDbContext _context) : IQuizService
+public class QuizService(QuizDbContext _context, HttpClient httpClient) : IQuizService
 {
     public async Task<ApiResponse<Guid>> CreateQuizAsync(QuizDto quizDto, string userId)
     {

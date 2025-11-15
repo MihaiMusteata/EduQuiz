@@ -1,14 +1,22 @@
 from pydantic import BaseModel
 from typing import Literal, List
+from enum import Enum
+
+class QuestionType(Enum):
+    singleChoice = 0
+    multipleChoice = 1
+    trueFalse = 2
+    shortAnswer = 3
+
 class Answer(BaseModel):
     text: str
     isCorrect: bool
 
 class QuizQuestion(BaseModel):
     text: str
-    type: Literal['true-false', 'multiple-choice', 'single-choice', 'short-answer']
+    type: QuestionType
     hint: str
-    answers: List[Answer]
+    answerOptions: List[Answer]
 
 class QuizRequest(BaseModel):
     subject: str

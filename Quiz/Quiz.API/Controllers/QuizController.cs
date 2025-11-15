@@ -1,5 +1,8 @@
+using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Quiz.Application.DTOs.Question;
 using Quiz.Application.DTOs.Quiz;
 using Quiz.Application.Services.Quiz;
 using SharedLibrary;
@@ -13,10 +16,14 @@ namespace Quiz.API.Controllers;
 public class QuizController : BaseController
 {
     private readonly IQuizService _quizService;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConfiguration _configuration;
 
-    public QuizController(IQuizService quizService)
+    public QuizController(IQuizService quizService, IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
         _quizService = quizService;
+        _httpClientFactory = httpClientFactory;
+        _configuration = configuration;
     }
 
     [HttpPost("create")]
@@ -68,4 +75,55 @@ public class QuizController : BaseController
         if (!result.Success) return NotFound(result.Message);
         return Ok(result.Message);
     }
+    
+    [HttpPost("generate-quiz")]
+    public async Task<ActionResult<QuizDto>> GenerateQuiz([FromBody] QuizGenerationRequestDto request)
+    {
+        var client = _httpClientFactory.CreateClient("AIGeneratorMicroservice");
+        var endpoint = _configuration["AIGeneratorMicroservice:Endpoints:GenerateQuiz"];
+        var jsonContent = JsonSerializer.Serialize(request, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await client.PostAsync(endpoint, content);
+        }
+        catch (HttpRequestException ex)
+        {
+            return StatusCode(502, new { error = "AI Microservice is not reachable" });
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            return StatusCode((int)response.StatusCode, new { error = "Eroare de la microserviciu", details = errorContent });
+        }
+
+        var responseJson = await response.Content.ReadAsStringAsync();
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        var listOfQuestions = JsonSerializer.Deserialize<List<AIQuizQuestionDto>>(responseJson, options);
+        return Ok(listOfQuestions);
+    }
+    
+    [HttpGet("test-client")]
+    public IActionResult TestClient()
+    {
+        if (_httpClientFactory == null)
+            return BadRequest("IHttpClientFactory este NULL!");
+
+        var client = _httpClientFactory.CreateClient("AIGeneratorMicroservice");
+        return Ok(new { 
+            BaseAddress = client.BaseAddress,
+            Headers = client.DefaultRequestHeaders.ToString()
+        });
+    }
+    
 }
