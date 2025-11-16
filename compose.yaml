@@ -1,12 +1,63 @@
 services:
-  
+  api_gateway:
+    build:
+      context: ./APIGateway
+      dockerfile: Dockerfile
+    ports:
+      - "3030:8080"
+    container_name: api-gateway
+    depends_on:
+      - authentication_service
+      - quiz_service
+      - quiz_session_service
+      - ai_service
+    networks:
+      - eduquiz_network
+
+  authentication_service:
+    build:
+      context: .
+      dockerfile: Authentication/Authentication.API/Dockerfile
+    ports:
+      - "8081:8080"
+    container_name: auth-service
+    depends_on:
+      - postgres-auth
+    networks:
+      - eduquiz_network
+
+  quiz_service:
+    build:
+      context: .
+      dockerfile: Quiz/Quiz.API/Dockerfile
+    ports:
+      - "8082:8080"
+    container_name: quiz-service
+    depends_on:
+      - postgres-quiz
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5433;Database=eduquiz_quiz_db;Username=admin;Password=secret
+    networks:
+      - eduquiz_network
+
+  quiz_session_service:
+    build:
+      context: .
+      dockerfile: QuizSession/QuizSession.API/Dockerfile
+    ports:
+      - "8083:8080"
+    container_name: quiz-session-service
+    depends_on:
+      - postgres-quiz-session
+    networks:
+      - eduquiz_network
   
   ai_service:
     build:
       context: ./AI
       dockerfile: Dockerfile
     ports:
-      - "0.0.0.0:8001:8001"
+      - "8001:8001"
     container_name: ai_service
     env_file:
       - ./AI/.env
@@ -53,10 +104,15 @@ services:
       POSTGRES_DB: eduquiz_quiz_session_db
     ports:
       - "5435:5432"
+    volumes:
+      - postgres_quiz_session_data:/var/lib/postgresql/data
+    networks:
+      - eduquiz_network
 
 volumes:
   postgres_auth_data:
   postgres_quiz_data:
+  postgres_quiz_session_data:
 
 networks:
   eduquiz_network:
