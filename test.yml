@@ -1,0 +1,36 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    # 1. Warm-up 
+    - duration: 10
+      arrivalRate: 20
+    
+    # 2. 100 utilizatori/sec
+    - duration: 60
+      arrivalRate: 20
+      rampTo: 100
+    
+    # 3. 200 utilizatori/sec
+    - duration: 60
+      arrivalRate: 100
+      rampTo: 200
+    
+    # 4. 300 utilizatori/sec
+    - duration: 30
+      arrivalRate: 300
+
+  timeout: 30
+
+scenarios:
+  - name: "GET public quizzes – stress test"
+    weight: 100
+    flow:
+      - think: 1
+      - get:
+          url: "/api/quiz/public/quizzes"
+          headers:
+            Accept: "application/json"
+            User-Agent: "Artillery-Stress-Test"
+          capture:
+            - json: "$.length"
+              as: totalQuizzes
